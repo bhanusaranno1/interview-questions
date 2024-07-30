@@ -1,0 +1,46 @@
+1) What is zero copy cloning and importance
+     .creating multiple copies of a database ,schemas,tables (dst) without additional cost so called zero copy cloning
+     .clone object is independent from original dst
+     .it act as backup
+     .tran and temp not cloned into permanent dst
+importance..
+   Cost Savings:
+        Zero-copy cloning reduces storage costs by avoiding data duplication.
+   Speed:
+        Cloning is lightning-fast, ideal for agile development and testing.
+ Efficiency:
+        It optimizes system resources and performance.
+ Data Warehousing:
+        Simplifies data replication and management in Snowflake
+-------------------------------------------------------------------------------------------------------------------------------------------------
+2) What is View,secure view and materialzied view and usage
+view:
+     *view is nothing but like table
+     *it depend on table , if we do any changes in table its effected on views
+     *based on view we can combine , segregate(separating),and protecting data
+     syntax::
+           create or replace view <view_name>
+            as (select * from table_name)
+secure view::
+     *secure view does not allow users to see the view
+     *it is only exposed by authorised users
+     advantages::
+         *protect data
+         *not able to see underlying table present in our DB by others
+     syntax::
+          create or replace secure view <view_name>
+            as select statement
+materilized view::
+          * we can on create single tables ,can not bulid multiple tables
+          * its avilable only enterprice eddition.
+          *if you wnat to see frequently that data based on we can create a view
+          syntax::
+           create or replace  materilized view <view_name>
+           as select statement
+*****snowflake allows materilized view and non materilized view but not secure views(but secure view can be applicable inside the materilized and non materilized view)
+-------------------------------------------------------------------------------------------------------------------------------------------------
+3) How snowflake pricing is calculate
+-------------------------------------------------------------------------------------------------------------------------------------------------
+4) What are copy options and importance
+
+correlation id=16750c52-eaf8-46f2-acf1-4878101c952e

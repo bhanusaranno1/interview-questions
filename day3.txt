@@ -1,0 +1,59 @@
+1) What is time travel  and how many ways we can recover the data
+Time travel: allow to users to retrive the past data at any time throught a specific retension period.
+
+       3  Ways to query historical data:
+            >>At specified timestamp
+            >>At some time ago(offset)
+            >>Before executing any statement/query id
+          //using query id
+create or replace table timetravel1 as (
+select * from timetravel before(statement =>'01b5e0f2-0001-2831-0000-00053e7ac711')
+)
+//using timestamp
+select current_timestamp//2024-07-24 02:46:54.023 -0700
+
+create or replace table timetravel1 as (
+select * from timetravel before (timestamp =>'2024-07-24 02:48:54.023')
+)
+
+//using offset
+create or replace table timetravel1 as (
+select * from timetravel at (offset =>-60*7.5)
+)
+--------------------------------------------------------------------------------------------------------------------------------------
+2) Fact table
+         *fact table stores the numeric data used for analysis. 
+         *fact table contains two columns a)fact column b)foreign column.
+ a)fact column provide actual data and used for analysis.
+ b)foreign column links with dimension table and provide context data.
+
+Dimension table : 
+          *
+          *it is stored in non-numeric data and placed in b/w star schema and snowflake schema.
+          *dimension table contain a)attribute column b)foreign column. 
+           a)foreign column provide context data and used in filtering,grouping,and labelling the data.
+--------------------------------------------------------------------------------------------------------------------------------------
+3) snowflake table types
+1. Permanent :
+	1. To create a table we are going to use TABLE keyword 
+	2. Time travel will be applicable (0-90) days 
+	3. file safe is available 
+	4. Until you drop the data is available 
+2. Transient 
+	1. To create a table we are going to use Transient TABLE keyword 
+	2. Time travel will be applicable (0-1) days 
+	3. file safe is not available 
+	4. Until you drop the data is available 
+3. Temporary 	
+    1. To create a table we are going to use Temporary TABLE keyword 		
+    2. Time travel will be applicable (0-1) days 	
+    3. file safe is not available 
+    4. Until the session is closed 
+--------------------------------------------------------------------------------------------------------------------------------------
+4) what is start schema & snowflake schema
+     *start table contain 1 fact table and multi dimension table those are denormalized(multi tables into single table).
+     *start schema gives the better performance compared to the snowflake schema.
+
+     *snowflake schema contains 1 fact and 1 dimension table those are normalized(single tables into multi table). 
+     *snowflake schema having more joins low performance compared to the snowflake schema.
+--------------------------------------------------------------------------------------------------------------------------------------

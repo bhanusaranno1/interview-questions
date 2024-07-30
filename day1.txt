@@ -1,0 +1,54 @@
+                             self introduction?
+         hi im bhanu saran reddy having 2 years of IT experience as snowflake developer.started my journey with IBM and currently working 
+on the same .
+   >>>i have good working experience with SDLC life cycle model like analysis,design,development,testing and deployment of project
+   >>>i have worked on the domains like ecommers and supply chain management
+   >>>i have good work experience in data loading into snowflake cloud data warehouse from AWS S3
+   >>>i have worked on migration data from relational database to snowflake 
+   >>>working experince with handling large and complex data sets in CSV,JSON AND PARQUET file formats
+   >>>worked in bulk loading and unloading data into snowflake tables using copy command
+   >>>also worked on creating pipeline using streams and tasks
+   >>>worked on zero copy clone , snowpipe and waterfall methodology life cycle
+
+                  ROLES AND RESPONSIBILITES::
+ as a snowflake developer i have been involved into 
+  >>> daily scrum , backlog , sprint planning and sprint demo session
+  >>> responsible for end to end data migration from RDBMS to snowflake cloud data warehouse
+  >>> i have been involved in bulk loading from external stage(AWS S3) to snowflake using copy command
+  >>> responsible for all activities related to development , implementation etc..
+  >>>creating internal and external stages and transformed data during load 
+  >>> i created file formats , functions,databases , schemas etc
+
+                          PROJECT::
+banking self service project ::
+                   >>>normally if customer want debit card / cheque orders...they need to visit branch or customer care
+                   >>>instead of this we have created banking self service portal based on the business requirement
+                   >>>in this portal customer / users orders debit card / cheque via portal themself
+few modules::
+            >>debit card order / reorder/transaction
+            >>reorder checks
+            >>deposite slips
+            >>debit card pin reset , track orders
+ >>>recently i have worked on debit card lock/unlock function
+ >>>finally the data is going to sit into DB2
+ >>>then after that data will processed by another team like mulesoft and infomatica team .
+ >>>data to AWS S3 then from AWS S3 then we are picking data and working on it
+
+ADVANTAGES::
+     >>this way we can reduce calls to call centre
+     >>less time taking process
+
+               SNOWFLAKE EDITION:::
+     >>>STANDARD                        >>>ENTERPRISE                     >>>BUSSINESS CRITICAL         VIRTUAL PRIVATE
+   ..complete DWH                        ..m2cs                            ..SEF                          ...vs
+   ..automatic data encryption             ..multicluster warehouse        ...extended support            ..dedicated vitual servers 
+   ..tt :: 1 day                           ..tt::90                        ...additional security         ..separate snowflake environment
+   ..fs :: 7 days                          ..materilized veiw                     eg::encryption
+   ..secure data share                     ..search optimization           ...fs
+   ..2.70                                  ..column level security         ...5.40
+                                           ..4
+
+
+
+
+

@@ -1,0 +1,219 @@
+1) Snowflake architecture
+database storage :
+    i.It stores data by compress
+    ii.it store the data through micro partition in hybrid columnar storage format
+   iii.saved in blobs
+query processing;
+     i.it is actual processing unit
+    ii.runs on virtual warehouse
+   iii.using mpp(massive parallel processing) compute cluster
+cloud service:
+     i.it is brain of the system
+    ii.it is a layer which is a collection of services that cordinate activities across snowflake
+   iii.manages infrastucture,metadata,provide security
+
+Snowflake having 3 layers of architecturer.1) CLOUD STORAGE
+
+                                            2) QUERY PROCESSING
+
+                                             3) DATABASE STORAGE
+
+CLOUD STORAGE: this layer coordinate and manage entire snowflake system. it handles  authentication , infrastructure management, metadata management, query optimization, and control acess.
+                  
+                this layer allows the snowflake and provide high scalability, complexity and transform data.
+
+
+QUERY PROCESSING: it handles the execution of queries.snowflake process massively parallel processing of compute clusters. each node of the cluster stored in dataset locally. 
+
+                   it allows high performances and scalability.
+
+ DATABASE STORAGE : the data is loaded into snowflake. its recognize the optimized, compressed,columnr format and stored in cloud storage.this layer
+
+                     handle all aspects of datastorage including organization, file size, structure, metadata and compression.
+-----------------------------------------------------------------------------------------------------------------------------------------------
+2) what is bulk loading vs continues loading
+ans)
+bulk loading                              continuous load
+1.most frequent method                    1.designed to load small volume of data
+2.uses warehouse                          2.automatically once they are added to stage 
+3.copy command                            3.late results for analysis
+4.through it transformation               5.snowpipe
+     possible
+
+ Bulk loading : loading the large amount of data from databases  relatively short period of time.in bulk loading transformations are possible . bulk loading used for ware 
+
+                       houses and loading from the stages and we need to load the data using copy command. bulk loading used for warehouses.
+
+
+      Continuos loading: loading the data from files into the database tables as soon as they are available in a stages. in continuos loading design to load 
+
+                          small volume of data. automatically once they are added in to the stages.late results for the analysis .
+-------------------------------------------------------------------------------------------------------------------------------------------------
+3) AWs integration with snowflake
+ans) a. Create AWS free tier account
+    b. Create bucket (vision-test-snow)
+    c. just create different folders (CSV/JSON)
+    d. Upload the files
+    e. Create IAM Roles  and keep external id as 00000  and select s3-full access
+    f. Goto Snowflake create integration object and describe int-object
+    g. Once you describe take user ARN  and External ID
+    h. Modify IAM role in AWS--> trust relation ships--> edit to add the user ARN and external id
+    i. Create stage /fileformat and list ?
+    j. By using copy command we can load the data Csv/json
+//CREATING STORAGE INTEGRATION OBJECT
+CREATE or replace storage integration bob_s3
+type = EXTERNAL_STAGE
+STORAGE_PROVIDER = S3
+ENABLED = TRUE
+STORAGE_AWS_ROLE_ARN='arn:aws:iam::767398012820:role/bhanu_7.23_acess_snow'
+STORAGE_ALLOWED_LOCATIONS=('s3://bhanu-bucket-s3/csv/','s3://bhanu-bucket-s3/json/')
+COMMENT = 'CREATING AWS INTEGRATION'
+
+//DESC INTEGRATION OBJECT to fetch external id and
+desc integration bob_s3
+
+//create csv table
+CREATE OR REPLACE TABLE OUR_FIRST_DB.PUBLIC.movie_titles (
+  show_id STRING,
+  type STRING,
+  title STRING,
+  director STRING,
+  cast STRING,
+  country STRING,
+  date_added STRING,
+  release_year STRING,
+  rating STRING,
+  duration STRING,
+  listed_in STRING,
+  description STRING )
+
+//create file format
+create schema file_formats
+create or replace  file format OUR_FIRST_DB.file_formats.csv_format
+type = csv
+field_delimiter =','
+skip_header = 1
+null_if = ('NULL','null')
+empty_field_as_null = TRUE    
+FIELD_OPTIONALLY_ENCLOSED_BY = '"'    
+
+//create stage 
+create schema external_stages
+create or replace stage OUR_FIRST_DB.external_stages.stage2
+url = 's3://bhanu-bucket-s3/csv/'
+storage_integration = bob_s3
+file_format = OUR_FIRST_DB.file_formats.csv_format
+
+list @OUR_FIRST_DB.external_stages.stage2
+
+//copying into table from aws
+copy into OUR_FIRST_DB.PUBLIC.movie_titles
+from @OUR_FIRST_DB.external_stages.stage2
+
+select count(*) from OUR_FIRST_DB.PUBLIC.movie_titles
+
+
+--------------------------json ---------------------------------
+
+//create json table using variant
+create or replace table OUR_FIRST_DB.PUBLIC.awsjson ( raw_data  variant) ;
+
+//create file format
+create or replace file format OUR_FIRST_DB.FILE_FORMATS.JSON_FORMAT
+type = json
+
+//create stage
+create or replace stage OUR_FIRST_DB.EXTERNAL_STAGES.STAGE3
+url = 's3://bhanu-bucket-s3/json/'
+storage_integration = bob_s3
+file_format = OUR_FIRST_DB.FILE_FORMATS.JSON_FORMAT
+
+list @OUR_FIRST_DB.EXTERNAL_STAGES.STAGE3
+
+//copy into table from aws s3
+copy into OUR_FIRST_DB.PUBLIC.awsjson
+from @OUR_FIRST_DB.EXTERNAL_STAGES.STAGE3
+
+select * from OUR_FIRST_DB.PUBLIC.awsjson
+
+------------------------------analyse and parse-------------------------------------------------
+select $1:asin from OUR_FIRST_DB.PUBLIC.awsjson;
+ --------------OR---------WITH ""----------------
+SELECT raw_data:"asin" as id  FROM OUR_FIRST_DB.PUBLIC.awsjson;
+---------------OR----------------
+SELECT raw_data:"asin"::STRING as id  FROM OUR_FIRST_DB.PUBLIC.awsjson;
+----------------------------------------------------------------
+-----------to see in json rawdata tabular form------------- 
+SELECT 
+    raw_data:"asin"::string as id,  
+    raw_data:"helpful"::array as helpful,
+    raw_data:"overall"::int as overall,
+    raw_data:"reviewText"::STRING as reviewText
+
+FROM OUR_FIRST_DB.PUBLIC.awsjson;
+---------------------------to keep tabular json data into another table------------
+create or replace table sai as (
+SELECT 
+    raw_data:"asin"::string as id,  
+    raw_data:"helpful"::array as helpful,
+    raw_data:"overall"::int as overall,
+    raw_data:"reviewText"::STRING as reviewText
+
+FROM OUR_FIRST_DB.PUBLIC.awsjson
+)
+-----------json raw data------------
+select * FROM OUR_FIRST_DB.PUBLIC.awsjson;
+--------------json table data-------
+select * FROM sai;
+--------------------------------------------------------------------------------------------------------------------------------------
+4) How to load semi structured data
+ans) //create json table using variant
+create or replace table OUR_FIRST_DB.PUBLIC.awsjson ( raw_data  variant) ;
+
+//create file format
+create or replace file format OUR_FIRST_DB.FILE_FORMATS.JSON_FORMAT
+type = json
+
+//create stage
+create or replace stage OUR_FIRST_DB.EXTERNAL_STAGES.STAGE3
+url = 's3://bhanu-bucket-s3/json/'
+storage_integration = bob_s3
+file_format = OUR_FIRST_DB.FILE_FORMATS.JSON_FORMAT
+
+list @OUR_FIRST_DB.EXTERNAL_STAGES.STAGE3
+
+//copy into table from aws s3
+copy into OUR_FIRST_DB.PUBLIC.awsjson
+from @OUR_FIRST_DB.EXTERNAL_STAGES.STAGE3
+
+select * from OUR_FIRST_DB.PUBLIC.awsjson
+
+------------------------------analyse and parse-------------------------------------------------
+select $1:asin from OUR_FIRST_DB.PUBLIC.awsjson;
+ --------------OR---------WITH ""----------------
+SELECT raw_data:"asin" as id  FROM OUR_FIRST_DB.PUBLIC.awsjson;
+---------------OR----------------
+SELECT raw_data:"asin"::STRING as id  FROM OUR_FIRST_DB.PUBLIC.awsjson;
+----------------------------------------------------------------
+-----------to see in json rawdata tabular form------------- 
+SELECT 
+    raw_data:"asin"::string as id,  
+    raw_data:"helpful"::array as helpful,
+    raw_data:"overall"::int as overall,
+    raw_data:"reviewText"::STRING as reviewText
+
+FROM OUR_FIRST_DB.PUBLIC.awsjson;
+---------------------------to keep tabular json data into another table------------
+create or replace table sai as (
+SELECT 
+    raw_data:"asin"::string as id,  
+    raw_data:"helpful"::array as helpful,
+    raw_data:"overall"::int as overall,
+    raw_data:"reviewText"::STRING as reviewText
+
+FROM OUR_FIRST_DB.PUBLIC.awsjson
+)
+-----------json raw data------------
+select * FROM OUR_FIRST_DB.PUBLIC.awsjson;
+--------------json table data-------
+select * FROM sai;
